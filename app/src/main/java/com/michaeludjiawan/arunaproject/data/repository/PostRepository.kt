@@ -4,5 +4,5 @@ import com.michaeludjiawan.arunaproject.data.api.Result
 import com.michaeludjiawan.arunaproject.data.model.Post
 
 interface PostRepository {
-    suspend fun getPosts(forceRefresh: Boolean): Result<List<Post>>
+    suspend fun getPosts(query: String): Result<List<Post>>
 }

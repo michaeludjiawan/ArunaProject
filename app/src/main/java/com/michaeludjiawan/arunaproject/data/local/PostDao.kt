@@ -12,6 +12,6 @@ interface PostDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(posts: List<Post>)
 
-    @Query("SELECT * FROM Post")
-    suspend fun getPosts(): List<Post>
+    @Query("SELECT * FROM Post WHERE title LIKE '%' || :query || '%'")
+    suspend fun getPosts(query: String): List<Post>
 }

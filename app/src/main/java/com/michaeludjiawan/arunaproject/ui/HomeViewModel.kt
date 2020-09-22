@@ -23,11 +23,11 @@ class HomeViewModel(
         getPosts()
     }
 
-    fun getPosts(forceRefresh: Boolean = false) {
+    fun getPosts(query: String = "") {
         mutablePostsResult.value = UiResult.Loading()
 
         viewModelScope.launch {
-            mutablePostsResult.value = postRepository.getPosts(forceRefresh).toUiResult()
+            mutablePostsResult.value = postRepository.getPosts(query).toUiResult()
         }
     }
 

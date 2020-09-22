@@ -14,11 +14,11 @@ class PostRepositoryImpl(
     private val appPref: AppPreferences
 ) : PostRepository {
 
-    override suspend fun getPosts(forceRefresh: Boolean): Result<List<Post>> {
-        return if (forceRefresh || !isCacheValid()) {
+    override suspend fun getPosts(query: String): Result<List<Post>> {
+        return if (!isCacheValid()) {
             getPostsFromServer()
         } else {
-            val posts = getPostsFromLocal()
+            val posts = getPostsFromLocal(query)
             Result.Success(posts)
         }
     }
@@ -33,8 +33,8 @@ class PostRepositoryImpl(
         return elapsedTime < API_CACHE_DURATION
     }
 
-    private suspend fun getPostsFromLocal(): List<Post> {
-        return appDb.postDao().getPosts()
+    private suspend fun getPostsFromLocal(query: String): List<Post> {
+        return appDb.postDao().getPosts(query)
     }
 
     private suspend fun getPostsFromServer(): Result<List<Post>> {
