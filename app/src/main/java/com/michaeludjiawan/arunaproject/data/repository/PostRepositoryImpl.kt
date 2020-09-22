@@ -15,12 +15,13 @@ class PostRepositoryImpl(
 ) : PostRepository {
 
     override suspend fun getPosts(query: String): Result<List<Post>> {
-        return if (!isCacheValid()) {
-            getPostsFromServer()
-        } else {
-            val posts = getPostsFromLocal(query)
-            Result.Success(posts)
+        if (!isCacheValid()) {
+            val result = getPostsFromServer()
+            if (result is Result.Error) return result
         }
+
+        val posts = getPostsFromLocal(query)
+        return Result.Success(posts)
     }
 
     // Cache is invalid if duration exceed API_CACHE_DURATION or doesn't exist

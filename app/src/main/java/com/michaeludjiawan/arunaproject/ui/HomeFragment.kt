@@ -3,10 +3,12 @@ package com.michaeludjiawan.arunaproject.ui
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.michaeludjiawan.arunaproject.R
+import com.michaeludjiawan.arunaproject.data.model.Post
 import kotlinx.android.synthetic.main.fragment_home.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -53,19 +55,26 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun initObservers() {
         viewModel.postsResult.observe(viewLifecycleOwner, { result ->
-            when (result) {
-                is UiResult.Loading -> {
+            handleStateVisibility(result)
 
-                }
-                is UiResult.Success -> {
-                    viewModel.setCurrentPosts(result.data)
-                    updateDataSetChanged()
-                }
-                is UiResult.Error -> {
-
-                }
+            if (result is UiResult.Success) {
+                handleStateVisibility(result)
+                viewModel.setCurrentPosts(result.data)
+                updateDataSetChanged()
             }
         })
+
+        btn_home_error.setOnClickListener {
+            et_home_search_input.text = null
+            viewModel.getPosts()
+        }
+    }
+
+    private fun handleStateVisibility(result: UiResult<List<Post>>) {
+        pb_home_loader.isVisible = result is UiResult.Loading
+        btn_home_error.isVisible = result is UiResult.Error
+        rv_home_posts.isVisible = result is UiResult.Success
+        tv_home_empty.isVisible = result is UiResult.Success && result.data.isEmpty()
     }
 
     private fun updateDataSetChanged() {
