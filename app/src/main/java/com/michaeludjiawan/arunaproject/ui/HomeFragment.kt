@@ -19,10 +19,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         super.onViewCreated(view, savedInstanceState)
 
         initRecyclerView()
+        initObservers()
     }
 
     private fun initRecyclerView() {
-        postAdapter = PostAdapter(viewModel.getPosts())
+        postAdapter = PostAdapter(viewModel.getCurrentPosts())
 
         rv_home_posts.apply {
             setHasFixedSize(true)
@@ -30,6 +31,27 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
             adapter = postAdapter
         }
+    }
+
+    private fun initObservers() {
+        viewModel.postsResult.observe(viewLifecycleOwner, { result ->
+            when (result) {
+                is UiResult.Loading -> {
+
+                }
+                is UiResult.Success -> {
+                    viewModel.setCurrentPosts(result.data)
+                    updateDataSetChanged()
+                }
+                is UiResult.Error -> {
+
+                }
+            }
+        })
+    }
+
+    private fun updateDataSetChanged() {
+        rv_home_posts.adapter?.notifyDataSetChanged()
     }
 
 }
